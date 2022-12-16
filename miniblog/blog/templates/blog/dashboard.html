@@ -1,0 +1,59 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block msg %}
+{% if messages %}
+{% for msg in messages %}
+ <p {% if msg.tags %} class="alert alert-{{msg.tags}} my-3" {% endif %}>{{msg}}</p>
+{% endfor %}
+{% endif %}
+{% endblock msg %}
+
+{% block side %}
+ <div class="col-sm-2 text-white my-5 text-center">
+  <h4 class="my-5">Profile</h4>
+  {% if fname %}
+  <h5>{{fname}}</h5>
+  {% else %}<h5>{{request.user.username}}</h5>
+  {% endif %}
+  {% for gps in group %}
+   <p>{{gps.name}}</p>
+  {% endfor %}
+ </div>
+{% endblock side %}
+
+{% block content %}
+<div class="col-sm-10">
+    <h3 class="text-white my-5">Dashboard</h3>
+    <a href="{% url 'addpost' %}" class="btn btn-success">Add Post</a>
+    <h4 class="text-center alert alert-info mt-3">Show Post Information</h4>
+    <table class="table table-hover bg-white">
+        <thead>
+          <tr class="text-center">
+            <th scope="col" style="width: 2%;">ID</th>
+            <th scope="col" style="width: 28%;">Title</th>
+            <th scope="col" style="width: 55%;">Description</th>
+            <th scope="col" style="width: 15%;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+         {% for post in posts %}   
+          <tr>
+            <th scope="row">{{post.id}}</th>
+            <td>{{post.title}}</td>
+            <td>{{post.desc}}</td>
+            <td class="text-center">
+                <a href="{% url 'updatepost' post.id %}" class="btn btn-warning btn-sm">Edit</a>
+                {% if perms.blog.delete_post %}
+                <form action="{% url 'delete' post.id  %}" class="d-inline" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-danger btn-sm" value="Delete">
+                </form>
+                {% endif %}
+            </td>
+          </tr>
+         {% endfor %}
+        </tbody>
+      </table>
+</div>
+{% endblock content %}
